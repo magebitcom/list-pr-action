@@ -29968,7 +29968,7 @@ function run() {
         var _a, _b;
         try {
             // Get inputs
-            const ref = core.getInput("ref", { required: true });
+            const base = core.getInput("base", { required: true });
             const state = (_a = core.getInput("state", { required: false })) !== null && _a !== void 0 ? _a : "open";
             const token = core.getInput("github-token", { required: true });
             const hoursOld = parseInt((_b = core.getInput("hours_old", { required: false })) !== null && _b !== void 0 ? _b : "0", 10);
@@ -29980,7 +29980,7 @@ function run() {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 state: state,
-                base: ref,
+                base,
             });
             // Format and output the results
             let pulls = response.data;
@@ -29990,13 +29990,13 @@ function run() {
                 core.info(`Filtering out PRs that are more than ${hoursOld} hours old`);
             }
             if (pulls.length === 0) {
-                core.info(`No pull requests found for ref: ${ref}`);
+                core.info(`No pull requests found for base: ${base}`);
                 // Set empty outputs
                 core.setOutput("pull_requests_json", "[]");
                 core.setOutput("count", "0");
                 return;
             }
-            core.info(`Found ${pulls.length} pull request(s) for ref: ${ref}\n`);
+            core.info(`Found ${pulls.length} pull request(s) for base: ${base}\n`);
             // Create a simplified array of PR data for output
             const pullRequestsData = pulls.map(pr => {
                 var _a;

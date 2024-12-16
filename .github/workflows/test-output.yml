@@ -3,8 +3,8 @@ name: Test Pull Request Listing
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'Branch or tag to check PRs for'
+      base:
+        description: 'Base branch to check PRs for'
         required: true
         default: 'master'
       state:
@@ -34,7 +34,7 @@ jobs:
         uses: ./ # Uses local action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ inputs.ref }}
+          base: ${{ inputs.base }}
           state: ${{ inputs.state }}
           hours_old: ${{ inputs.hours_old }}
       

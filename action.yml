@@ -1,8 +1,8 @@
 name: 'List Pull Requests'
 description: 'Lists pull requests for a specified branch or tag'
 inputs:
-  ref:
-    description: 'The branch or tag to list pull requests for'
+  base:
+    description: 'Base branch to list pull requests for'
     required: true
     default: 'master'
   state:
