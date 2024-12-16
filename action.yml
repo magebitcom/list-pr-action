@@ -1,0 +1,18 @@
+name: 'List Pull Requests'
+description: 'Lists pull requests for a specified branch or tag'
+inputs:
+  ref:
+    description: 'The branch or tag to list pull requests for'
+    required: true
+    default: 'master'
+  state:
+    description: 'The state of the pull requests to list'
+    required: false
+    default: 'open'
+  github-token:
+    description: 'GitHub token for authentication'
+    required: true
+    default: ${{ github.token }}
+runs:
+  using: 'node16'
+  main: 'dist/index.js' 
