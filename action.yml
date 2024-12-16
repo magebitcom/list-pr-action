@@ -10,7 +10,7 @@ inputs:
     required: false
     default: 'open'
   hours_old:
-    description: 'Filter out PRs that are at least this many hours old (0 means no filtering)'
+    description: 'Filter out PRs that are more than this many hours old (0 means no filtering)'
     required: false
     default: '0'
   github-token:

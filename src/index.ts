@@ -1,11 +1,11 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-function isLessThanHoursOld(date: string, hours: number): boolean {
+function isOlderThanHours(date: string, hours: number): boolean {
   const prDate = new Date(date);
   const now = new Date();
   const diffInHours = (now.getTime() - prDate.getTime()) / (1000 * 60 * 60);
-  return diffInHours < hours;
+  return diffInHours > hours;
 }
 
 async function run(): Promise<void> {
@@ -33,8 +33,8 @@ async function run(): Promise<void> {
 
     // Filter by age if hours_old is specified
     if (hoursOld > 0) {
-      pulls = pulls.filter(pr => !isLessThanHoursOld(pr.created_at, hoursOld));
-      core.info(`Filtering out PRs that are ${hoursOld} hours old or older`);
+      pulls = pulls.filter(pr => !isOlderThanHours(pr.created_at, hoursOld));
+      core.info(`Filtering out PRs that are more than ${hoursOld} hours old`);
     }
 
     if (pulls.length === 0) {

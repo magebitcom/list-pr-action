@@ -7,7 +7,7 @@ This GitHub Action lists all pull requests targeting a specific branch or tag.
 - `ref`: The branch or tag to list pull requests for (default: 'main')
 - `github-token`: GitHub token for authentication (default: ${{ github.token }})
 - `state`: The state of the pull requests to list (default: 'open')
-- `hours_old`: Filter out PRs that are at least this many hours old (default: '0', meaning no filtering)
+- `hours_old`: Filter out PRs that are more than this many hours old (default: '0', meaning no filtering)
 
 ## Outputs
 
@@ -39,7 +39,7 @@ on:
         required: true
         default: 'main'
       hours:
-        description: 'Maximum age in hours (PRs older than this will be filtered out)'
+        description: 'Age limit in hours (PRs older than this will be filtered out)'
         required: false
         default: '0'
 
@@ -88,17 +88,6 @@ The action will output information about each pull request found both in the log
 }
 ```
 
-The logs will also show:
-```
-Filtering out PRs that are 24 hours old or older
-Found 1 pull request(s) for ref: main
-
-#123 - Add new feature
-Author: octocat
-URL: https://github.com/owner/repo/pull/123
-Age: 5.5 hours
----
-```
 
 ## Development
 
