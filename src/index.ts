@@ -1,12 +1,20 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
+function isLessThanHoursOld(date: string, hours: number): boolean {
+  const prDate = new Date(date);
+  const now = new Date();
+  const diffInHours = (now.getTime() - prDate.getTime()) / (1000 * 60 * 60);
+  return diffInHours < hours;
+}
+
 async function run(): Promise<void> {
   try {
     // Get inputs
     const ref = core.getInput("ref", { required: true });
     const state = core.getInput("state", { required: false }) ?? "open";
     const token = core.getInput("github-token", { required: true });
+    const hoursOld = parseInt(core.getInput("hours_old", { required: false }) ?? "0", 10);
 
     // Create octokit client
     const octokit = github.getOctokit(token);
@@ -21,15 +29,42 @@ async function run(): Promise<void> {
     });
 
     // Format and output the results
-    const pulls = response.data;
+    let pulls = response.data;
+
+    // Filter by age if hours_old is specified
+    if (hoursOld > 0) {
+      pulls = pulls.filter(pr => isLessThanHoursOld(pr.created_at, hoursOld));
+      core.info(`Filtering out PRs that are ${hoursOld} hours old or older`);
+    }
 
     if (pulls.length === 0) {
-      core.info(`No open pull requests found for ref: ${ref}`);
+      core.info(`No pull requests found for ref: ${ref}`);
+      // Set empty outputs
+      core.setOutput("pull_requests_json", "[]");
+      core.setOutput("count", "0");
       return;
     }
 
-    core.info(`Found ${pulls.length} open pull request(s) for ref: ${ref}\n`);
+    core.info(`Found ${pulls.length} pull request(s) for ref: ${ref}\n`);
 
+    // Create a simplified array of PR data for output
+    const pullRequestsData = pulls.map(pr => ({
+      number: pr.number,
+      title: pr.title,
+      author: pr.user?.login || '',
+      url: pr.html_url,
+      created_at: pr.created_at,
+      updated_at: pr.updated_at,
+      state: pr.state,
+      draft: pr.draft,
+      labels: pr.labels.map(label => label.name)
+    }));
+
+    // Set outputs
+    core.setOutput("pull_requests_json", JSON.stringify(pullRequestsData));
+    core.setOutput("count", pulls.length.toString());
+
+    // Logging
     pulls.forEach((pr) => {
       core.info(`#${pr.number} - ${pr.title}`);
       core.info(`Author: ${pr.user?.login}`);

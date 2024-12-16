@@ -9,10 +9,19 @@ inputs:
     description: 'The state of the pull requests to list'
     required: false
     default: 'open'
+  hours_old:
+    description: 'Filter out PRs that are at least this many hours old (0 means no filtering)'
+    required: false
+    default: '0'
   github-token:
     description: 'GitHub token for authentication'
     required: true
     default: ${{ github.token }}
+outputs:
+  pull_requests_json:
+    description: 'JSON array containing the pull request data'
+  count:
+    description: 'Number of pull requests found'
 runs:
   using: 'node16'
   main: 'dist/index.js' 

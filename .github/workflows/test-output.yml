@@ -1,0 +1,50 @@
+name: Test Pull Request Listing
+
+on:
+  # Test the action on push to main
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or tag to check PRs for'
+        required: true
+        default: 'master'
+      state:
+        description: 'PR state to check'
+        required: false
+        default: 'open'
+        type: choice
+        options:
+          - open
+          - closed
+          - all
+      hours_old:
+        description: 'Filter out PRs that are at least this many hours old (0 means no filtering)'
+        required: false
+        default: '0'
+
+jobs:
+  test-pr-listing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List PRs
+        id: list-prs
+        if: github.event_name == 'workflow_dispatch'
+        uses: ./ # Uses local action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ inputs.ref }}
+          state: ${{ inputs.state }}
+          hours_old: ${{ inputs.hours_old }}
+      
+      - name: Use PR Data
+        run: |
+          echo "Found ${{ steps.list-prs.outputs.count }} pull requests"
+          echo "Pull Requests Data:"
+          echo "${{ steps.list-prs.outputs.pull_requests_json }}" | jq '.'
