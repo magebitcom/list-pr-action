@@ -1,11 +1,6 @@
 name: Test Pull Request Listing
 
 on:
-  # Test the action on push to main
-  push:
-    branches:
-      - master
-
   workflow_dispatch:
     inputs:
       ref:
