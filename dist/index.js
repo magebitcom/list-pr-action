@@ -29960,7 +29960,10 @@ const github = __importStar(__nccwpck_require__(3228));
 function isOlderThanHours(date, hours) {
     const prDate = new Date(date);
     const now = new Date();
+    core.debug(`PR Date: ${prDate}`);
+    core.debug(`Now: ${now}`);
     const diffInHours = (now.getTime() - prDate.getTime()) / (1000 * 60 * 60);
+    core.debug(`Diff in hours: ${diffInHours}`);
     return diffInHours > hours;
 }
 function run() {

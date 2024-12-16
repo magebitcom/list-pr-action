@@ -4,7 +4,10 @@ import * as github from "@actions/github";
 function isOlderThanHours(date: string, hours: number): boolean {
   const prDate = new Date(date);
   const now = new Date();
+  core.debug(`PR Date: ${prDate}`);
+  core.debug(`Now: ${now}`);
   const diffInHours = (now.getTime() - prDate.getTime()) / (1000 * 60 * 60);
+  core.debug(`Diff in hours: ${diffInHours}`);
   return diffInHours > hours;
 }
 
