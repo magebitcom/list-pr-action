@@ -53,7 +53,7 @@ jobs:
     steps:
       - name: Get list of pull requests
         id: list-prs
-        uses: magebit/list-pr-action@v1
+        uses: magebitcom/list-pr-action@v1
         with:
           base: ${{ github.event.inputs.base }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
