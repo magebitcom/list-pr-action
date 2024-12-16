@@ -29957,11 +29957,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
-function isLessThanHoursOld(date, hours) {
+function isOlderThanHours(date, hours) {
     const prDate = new Date(date);
     const now = new Date();
     const diffInHours = (now.getTime() - prDate.getTime()) / (1000 * 60 * 60);
-    return diffInHours < hours;
+    return diffInHours > hours;
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -29986,8 +29986,8 @@ function run() {
             let pulls = response.data;
             // Filter by age if hours_old is specified
             if (hoursOld > 0) {
-                pulls = pulls.filter(pr => isLessThanHoursOld(pr.created_at, hoursOld));
-                core.info(`Filtering out PRs that are ${hoursOld} hours old or older`);
+                pulls = pulls.filter(pr => !isOlderThanHours(pr.created_at, hoursOld));
+                core.info(`Filtering out PRs that are more than ${hoursOld} hours old`);
             }
             if (pulls.length === 0) {
                 core.info(`No pull requests found for ref: ${ref}`);
