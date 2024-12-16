@@ -51,9 +51,9 @@ jobs:
   list-prs:
     runs-on: ubuntu-latest
     steps:
-      - name: List Pull Requests
+      - name: Get list of pull requests
         id: list-prs
-        uses: your-username/list-pr-action@v1
+        uses: magebit/list-pr-action@v1
         with:
           base: ${{ github.event.inputs.base }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
