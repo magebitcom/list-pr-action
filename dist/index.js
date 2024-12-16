@@ -29989,7 +29989,7 @@ function run() {
             let pulls = response.data;
             // Filter by age if hours_old is specified
             if (hoursOld > 0) {
-                pulls = pulls.filter(pr => !isOlderThanHours(pr.created_at, hoursOld));
+                pulls = pulls.filter(pr => isOlderThanHours(pr.created_at, hoursOld));
                 core.info(`Filtering out PRs that are more than ${hoursOld} hours old`);
             }
             if (pulls.length === 0) {
