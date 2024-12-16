@@ -1,5 +1,5 @@
-name: 'List Pull Requests'
-description: 'Lists pull requests for a specified branch or tag'
+name: 'Get list of pull requests'
+description: 'Lists pull requests for a specified branch'
 inputs:
   base:
     description: 'Base branch to list pull requests for'
