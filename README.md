@@ -22,8 +22,7 @@ This GitHub Action lists all pull requests targeting a specific branch or tag.
     "updated_at": "2023-12-16T00:00:00Z",
     "state": "open",
     "draft": false,
-    "labels": ["bug", "enhancement"],
-    "hours_old": 48.5
+    "labels": ["bug", "enhancement"]
   }
   ```
 - `count`: Number of pull requests found
