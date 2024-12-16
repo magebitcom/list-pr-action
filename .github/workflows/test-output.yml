@@ -42,6 +42,6 @@ jobs:
         run: |
           echo "Found ${{ steps.list-prs.outputs.count }} pull requests"
           echo "Pull Requests Data:"
-          echo "$JSON" | jq '.'
+          echo "$JSON" | jq '.[].url'
         env:
           JSON: ${{ steps.list-prs.outputs.pull_requests_json }}
