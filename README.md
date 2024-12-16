@@ -4,7 +4,7 @@ This GitHub Action lists all pull requests targeting a specific branch or tag.
 
 ## Inputs
 
-- `ref`: The branch or tag to list pull requests for (default: 'main')
+- `base`: The base branch to list pull requests for (default: 'master')
 - `github-token`: GitHub token for authentication (default: ${{ github.token }})
 - `state`: The state of the pull requests to list (default: 'open')
 - `hours_old`: Filter out PRs that are more than this many hours old (default: '0', meaning no filtering)
@@ -22,7 +22,11 @@ This GitHub Action lists all pull requests targeting a specific branch or tag.
     "updated_at": "2023-12-16T00:00:00Z",
     "state": "open",
     "draft": false,
-    "labels": ["bug", "enhancement"]
+    "labels": ["bug", "enhancement"],
+    "reviewers": {
+      "users": ["reviewer1", "reviewer2"],
+      "teams": ["team-reviewers"]
+    }
   }
   ```
 - `count`: Number of pull requests found
@@ -34,8 +38,8 @@ name: List Pull Requests
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'Branch or tag to check'
+      base:
+        description: 'Base branch to check'
         required: true
         default: 'main'
       hours:
@@ -51,7 +55,7 @@ jobs:
         id: list-prs
         uses: your-username/list-pr-action@v1
         with:
-          ref: ${{ github.event.inputs.ref }}
+          base: ${{ github.event.inputs.base }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           hours_old: ${{ github.event.inputs.hours }}
           
@@ -81,13 +85,28 @@ The action will output information about each pull request found both in the log
       "updated_at": "2023-12-16T00:00:00Z",
       "state": "open",
       "draft": false,
-      "labels": ["enhancement"]
+      "labels": ["enhancement"],
+      "reviewers": {
+        "users": ["reviewer1", "reviewer2"],
+        "teams": ["team-reviewers"]
+      }
     }
   ],
   "count": 1
 }
 ```
 
+The logs will also show:
+```
+Found 1 pull request(s) for base: main
+
+#123 - Add new feature
+Author: octocat
+URL: https://github.com/owner/repo/pull/123
+Reviewers: reviewer1, reviewer2
+Team Reviewers: team-reviewers
+---
+```
 
 ## Development
 

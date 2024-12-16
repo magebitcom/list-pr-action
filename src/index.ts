@@ -51,16 +51,29 @@ async function run(): Promise<void> {
     core.info(`Found ${pulls.length} pull request(s) for base: ${base}\n`);
 
     // Create a simplified array of PR data for output
-    const pullRequestsData = pulls.map(pr => ({
-      number: pr.number,
-      title: pr.title,
-      author: pr.user?.login || '',
-      url: pr.html_url,
-      created_at: pr.created_at,
-      updated_at: pr.updated_at,
-      state: pr.state,
-      draft: pr.draft,
-      labels: pr.labels.map(label => label.name)
+    const pullRequestsData = await Promise.all(pulls.map(async pr => {
+      // Get reviewers for each PR
+      const reviewers = await octokit.rest.pulls.listRequestedReviewers({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: pr.number
+      });
+
+      return {
+        number: pr.number,
+        title: pr.title,
+        author: pr.user?.login || '',
+        url: pr.html_url,
+        created_at: pr.created_at,
+        updated_at: pr.updated_at,
+        state: pr.state,
+        draft: pr.draft,
+        labels: pr.labels.map(label => label.name),
+        reviewers: {
+          users: reviewers.data.users.map(user => user.login),
+          teams: reviewers.data.teams.map(team => team.slug)
+        }
+      };
     }));
 
     // Set outputs
@@ -68,10 +81,16 @@ async function run(): Promise<void> {
     core.setOutput("count", pulls.length.toString());
 
     // Logging
-    pulls.forEach((pr) => {
+    pullRequestsData.forEach((pr) => {
       core.info(`#${pr.number} - ${pr.title}`);
-      core.info(`Author: ${pr.user?.login}`);
-      core.info(`URL: ${pr.html_url}`);
+      core.info(`Author: ${pr.author}`);
+      core.info(`URL: ${pr.url}`);
+      if (pr.reviewers.users.length > 0) {
+        core.info(`Reviewers: ${pr.reviewers.users.join(', ')}`);
+      }
+      if (pr.reviewers.teams.length > 0) {
+        core.info(`Team Reviewers: ${pr.reviewers.teams.join(', ')}`);
+      }
       core.info("---");
     });
   } catch (error) {

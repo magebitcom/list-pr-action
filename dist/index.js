@@ -30001,9 +30001,15 @@ function run() {
             }
             core.info(`Found ${pulls.length} pull request(s) for base: ${base}\n`);
             // Create a simplified array of PR data for output
-            const pullRequestsData = pulls.map(pr => {
+            const pullRequestsData = yield Promise.all(pulls.map((pr) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
-                return ({
+                // Get reviewers for each PR
+                const reviewers = yield octokit.rest.pulls.listRequestedReviewers({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number
+                });
+                return {
                     number: pr.number,
                     title: pr.title,
                     author: ((_a = pr.user) === null || _a === void 0 ? void 0 : _a.login) || '',
@@ -30012,18 +30018,27 @@ function run() {
                     updated_at: pr.updated_at,
                     state: pr.state,
                     draft: pr.draft,
-                    labels: pr.labels.map(label => label.name)
-                });
-            });
+                    labels: pr.labels.map(label => label.name),
+                    reviewers: {
+                        users: reviewers.data.users.map(user => user.login),
+                        teams: reviewers.data.teams.map(team => team.slug)
+                    }
+                };
+            })));
             // Set outputs
             core.setOutput("pull_requests_json", JSON.stringify(pullRequestsData));
             core.setOutput("count", pulls.length.toString());
             // Logging
-            pulls.forEach((pr) => {
-                var _a;
+            pullRequestsData.forEach((pr) => {
                 core.info(`#${pr.number} - ${pr.title}`);
-                core.info(`Author: ${(_a = pr.user) === null || _a === void 0 ? void 0 : _a.login}`);
-                core.info(`URL: ${pr.html_url}`);
+                core.info(`Author: ${pr.author}`);
+                core.info(`URL: ${pr.url}`);
+                if (pr.reviewers.users.length > 0) {
+                    core.info(`Reviewers: ${pr.reviewers.users.join(', ')}`);
+                }
+                if (pr.reviewers.teams.length > 0) {
+                    core.info(`Team Reviewers: ${pr.reviewers.teams.join(', ')}`);
+                }
                 core.info("---");
             });
         }
